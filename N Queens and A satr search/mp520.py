@@ -264,17 +264,3 @@ def n_queens(n, get_rand_st, comp_att_pairs, hill_descending):
         final_state = hill_descending(state, comp_att_pairs)
         if comp_att_pairs(final_state) == 0:
             return final_state
-
-
-def test():
-    n = 20
-    state = get_random_state(n)
-    print(state)
-    attacking = compute_attacking_pairs(state)
-    print(attacking)
-    final = n_queens(n, get_random_state, compute_attacking_pairs,
-                     hill_desending_n_queens)
-    print(final)
-
-
-test()
