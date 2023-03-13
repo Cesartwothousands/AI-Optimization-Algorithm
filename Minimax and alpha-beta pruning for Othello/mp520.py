@@ -204,7 +204,7 @@ def minimax(state, player):
                         column = c
 
     # Change player
-    if row == -2 and column == -2:
+    if row == -1 and column == -1:
         value, _, _ = minimax(state, "B" if player == "W" else "W")
         #######################
 
@@ -281,7 +281,60 @@ def minimax_ab(state, player, alpha=-10000000, beta=10000000):
     value = 0
     row = -1
     column = -1
+
+    def get_opponent(player):
+        opponent = ''
+
+        # Choose opponent
+        if player == 'W':
+            opponent = 'B'
+        elif player == 'B':
+            opponent = 'W'
+        else:
+            print('minimax: Wrong Player Input')
+
+        return opponent
+
     # Your implementation goes here
+
+    if is_terminal_state(state):
+        return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
+
+    if player == "B":
+        value = -10000000
+    else:
+        value = 10000000
+
+    n = len(state)
+    for i in range(0, n):
+        for j in range(0, n):
+            # Check if it is a valid move
+            if get_move_value(state, player, i, j) != 0:
+
+                # try moving and get what values if we move
+                new_state = execute_move(state, player, i, j)
+                tmp_value, _, _ = minimax(
+                    new_state, "B" if player == "W" else "W")
+
+                # compare if this value is smaller or bigger
+                if player == 'B':
+                    if tmp_value > value:
+                        value = tmp_value
+                        row = i
+                        column = j
+                    alpha = max(alpha, value)
+                if player == 'W':
+                    if tmp_value < value:
+                        value = tmp_value
+                        row = i
+                        column = j
+                    beta = min(beta, value)
+                if alpha >= beta:
+                    break
+
+    if row == -1 and column == -1:
+        value, _, _ = minimax(state, "B" if player == "W" else "W")
+
     return (value, row, column)
 
 
@@ -294,5 +347,72 @@ that leads to an end game, using alpha-beta pruning.
 def full_minimax_ab(state, player):
     value = 0
     move_sequence = []
+    alpha = -10000000
+    beta = 10000000
+
+    def get_opponent(player):
+        opponent = ''
+
+        # Choose opponent
+        if player == 'W':
+            opponent = 'B'
+        elif player == 'B':
+            opponent = 'W'
+        else:
+            print('minimax: Wrong Player Input')
+
+        return opponent
+
     # Your implementation goes here
+
+    if is_terminal_state(state):
+        return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
+
+    if player == "B":
+        value = -10000000
+    else:
+        value = 10000000
+
+    flag = False
+    n = len(state)
+    for i in range(0, n):
+        for j in range(0, n):
+            # Check if it is a valid move
+            if get_move_value(state, player, i, j) != 0:
+
+                # try moving and get what values if we move
+                new_state = execute_move(state, player, i, j)
+                tmp_value, moves = full_minimax(
+                    new_state, "B" if player == "W" else "W")
+
+                # compare if this value is smaller or bigger
+                if player == 'B':
+                    if tmp_value > value:
+                        value = tmp_value
+                        move_sequence = [(player, i, j)] + moves
+                    if value >= beta:
+                        flag = True
+                        break
+
+                    alpha = max(alpha, value)
+
+                if player == 'W':
+                    if tmp_value < value:
+                        value = tmp_value
+                        move_sequence = [(player, i, j)] + moves
+
+                    if value <= alpha:
+                        flag = True
+                        break
+
+                    beta = min(beta, value)
+
+        if flag == True:
+            break
+
+    # If no valid moves, the opponent moves
+    if move_sequence == []:
+        value, move_sequence = full_minimax(
+            state, "B" if player == "W" else "W")
+
     return (value, move_sequence)
