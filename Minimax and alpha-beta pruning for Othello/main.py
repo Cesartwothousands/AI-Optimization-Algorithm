@@ -45,6 +45,24 @@ def _get_default_start_game_state_5():
     return state
 
 
+def _get_default_start_game_state_6():
+    state = _get_empty_state(4)
+
+    state[1][1] = state[2][2] = "B"
+    state[2][1] = state[1][2] = "W"
+
+    return state
+
+
+def _get_default_start_game_state_7():
+    state = _get_empty_state(5)
+
+    state[0][1] = state[1][0] = state[4][4] = state[3][3] = "B"
+    state[0][0] = state[1][1] = state[3][4] = state[4][3] = "W"
+
+    return state
+
+
 if __name__ == "__main__":
     p1 = "B"
     p2 = "W"
@@ -92,3 +110,33 @@ if __name__ == "__main__":
     print(mp.full_minimax_ab(game_state, p1))
     elapsed_time = time.time() - start_time
     print(("Elapsed time: " + str(elapsed_time)))
+    print()
+
+    # Compute best game play with minimax
+    game_state = _get_default_start_game_state_6()
+
+    start_time = time.time()
+    print("Running full minimax: ")
+    print(mp.full_minimax(game_state, p1))
+    elapsed_time = time.time() - start_time
+    print("Elapsed time: " + str(elapsed_time))
+    print()
+    print("Running full minimax w/ alpha-beta pruning: ")
+    print(mp.full_minimax_ab(game_state, p1))
+    elapsed_time = time.time() - start_time
+    print("Elapsed time: " + str(elapsed_time))
+    print()
+
+    game_state = _get_default_start_game_state_7()
+
+    start_time = time.time()
+    print("Running full minimax: ")
+    print(mp.full_minimax(game_state, p1))
+    elapsed_time = time.time() - start_time
+    print("Elapsed time: " + str(elapsed_time))
+    print()
+    print("Running full minimax w/ alpha-beta pruning: ")
+    print(mp.full_minimax_ab(game_state, p1))
+    elapsed_time = time.time() - start_time
+    print("Elapsed time: " + str(elapsed_time))
+    print()
