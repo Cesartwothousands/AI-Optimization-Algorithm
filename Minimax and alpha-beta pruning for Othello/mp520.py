@@ -179,34 +179,25 @@ def minimax(state, player):
 
     # Your implementation goes here
 
-    if player == "B":
-        value = -10000000
-    else:
-        value = 10000000
+    value = -10000000 if player == "B" else 10000000
 
     for r in range(len(state)):
         for c in range(len(state)):
             move_value = get_move_value(state, player, r, c)
             if move_value > 0:
                 new_state = execute_move(state, player, r, c)
-                tmp_value, _, _ = minimax(
+                maxmin, row, column = minimax(
                     new_state, "B" if player == "W" else "W")
-                ##########################################
-                if player == 'B':
-                    if tmp_value > value:
-                        value = tmp_value
-                        row = r
-                        column = c
-                else:
-                    if tmp_value < value:
-                        value = tmp_value
-                        row = r
-                        column = c
+
+                if (player == 'B' and maxmin > value) or (player == 'W' and maxmin < value):
+                    value = maxmin
+                    row = r
+                    column = c
 
     # Change player
     if row == -1 and column == -1:
-        value, _, _ = minimax(state, "B" if player == "W" else "W")
-        #######################
+        player = get_opponent(player)
+        value, row, column = minimax(state, player)
 
     return (value, row, column)
 
@@ -238,34 +229,24 @@ def full_minimax(state, player):
     if is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
-    if player == "B":
-        value = -10000000
-    else:
-        value = 10000000
+    value = -10000000 if player == "B" else 10000000
 
-    n = len(state)
-    for r in range(n):
-        for c in range(n):
+    for r in range(len(state)):
+        for c in range(len(state)):
             move_value = get_move_value(state, player, r, c)
             if move_value > 0:
                 new_state = execute_move(state, player, r, c)
                 #player = get_opponent(player)
-                tmp_value, moves = full_minimax(
+                maxmin, step = full_minimax(
                     new_state, "B" if player == "W" else "W")
 
-                if player == 'B':
-                    if tmp_value > value:
-                        value = tmp_value
-                        move_sequence = [(player, r, c)] + moves
-                else:
-                    if tmp_value < value:
-                        value = tmp_value
-                        move_sequence = [(player, r, c)] + moves
+                if (player == 'B' and maxmin > value) or (player == 'W' and maxmin < value):
+                    value = maxmin
+                    move_sequence = [(player, r, c)] + step
 
     if move_sequence == []:
         player = get_opponent(player)
-        value, move_sequence = full_minimax(
-            state, player)
+        value, move_sequence = full_minimax(state, player)
 
     return (value, move_sequence)
 
@@ -300,40 +281,28 @@ def minimax_ab(state, player, alpha=-10000000, beta=10000000):
     if is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
-    if player == "B":
-        value = -10000000
-    else:
-        value = 10000000
+    value = -10000000 if player == "B" else 10000000
 
-    n = len(state)
-    for i in range(0, n):
-        for j in range(0, n):
-            # Check if it is a valid move
-            if get_move_value(state, player, i, j) != 0:
+    for i in range(len(state)):
+        for j in range(len(state)):
+            move_value = get_move_value(state, player, i, j)
+            if move_value > 0:
 
-                # try moving and get what values if we move
                 new_state = execute_move(state, player, i, j)
-                tmp_value, _, _ = minimax(
+                maxmin,  row, column = minimax(
                     new_state, "B" if player == "W" else "W")
 
-                # compare if this value is smaller or bigger
-                if player == 'B':
-                    if tmp_value > value:
-                        value = tmp_value
-                        row = i
-                        column = j
-                    alpha = max(alpha, value)
-                if player == 'W':
-                    if tmp_value < value:
-                        value = tmp_value
-                        row = i
-                        column = j
-                    beta = min(beta, value)
-                if alpha >= beta:
-                    break
+            if maxmin > value and player == 'B' or maxmin < value and player == 'W':
+                value = maxmin
+                row, column = i, j
+            alpha = max(alpha, value) if player == 'B' else alpha
+            beta = min(beta, value) if player == 'W' else beta
+            if alpha >= beta:
+                break
 
     if row == -1 and column == -1:
-        value, _, _ = minimax(state, "B" if player == "W" else "W")
+        player = get_opponent(player)
+        value, row, column = minimax(state, player)
 
     return (value, row, column)
 
@@ -368,51 +337,39 @@ def full_minimax_ab(state, player):
     if is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
-    if player == "B":
-        value = -10000000
-    else:
-        value = 10000000
+    value = -10000000 if player == "B" else 10000000
 
-    flag = False
-    n = len(state)
-    for i in range(0, n):
-        for j in range(0, n):
-            # Check if it is a valid move
-            if get_move_value(state, player, i, j) != 0:
+    cut = False
+    for r in range(len(state)):
+        for c in range(len(state)):
+            move_value = get_move_value(state, player, r, c)
+            if move_value > 0:
 
-                # try moving and get what values if we move
-                new_state = execute_move(state, player, i, j)
-                tmp_value, moves = full_minimax(
+                new_state = execute_move(state, player, r, c)
+                maxmin, step = full_minimax(
                     new_state, "B" if player == "W" else "W")
 
-                # compare if this value is smaller or bigger
                 if player == 'B':
-                    if tmp_value > value:
-                        value = tmp_value
-                        move_sequence = [(player, i, j)] + moves
-                    if value >= beta:
-                        flag = True
-                        break
-
+                    if maxmin > value:
+                        value = maxmin
+                        move_sequence = [(player, r, c)] + step
                     alpha = max(alpha, value)
-
-                if player == 'W':
-                    if tmp_value < value:
-                        value = tmp_value
-                        move_sequence = [(player, i, j)] + moves
-
-                    if value <= alpha:
-                        flag = True
+                    if value >= beta:
+                        cut = True
                         break
-
+                else:
+                    if maxmin < value:
+                        value = maxmin
+                        move_sequence = [(player, r, c)] + step
                     beta = min(beta, value)
-
-        if flag == True:
+                    if value <= alpha:
+                        cut = True
+                        break
+        if cut == True:
             break
 
-    # If no valid moves, the opponent moves
     if move_sequence == []:
-        value, move_sequence = full_minimax(
-            state, "B" if player == "W" else "W")
+        player = get_opponent(player)
+        value, move_sequence = full_minimax(state, player)
 
     return (value, move_sequence)
