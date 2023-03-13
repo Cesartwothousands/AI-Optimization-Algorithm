@@ -179,54 +179,34 @@ def minimax(state, player):
 
     # Your implementation goes here
 
-    def max_value(state, player):
-        if is_terminal_state(state):
-            if player == "B":
-                return count_pieces(state)[0] - count_pieces(state)[1]
-            else:
-                return -count_pieces(state)[0] + count_pieces(state)[1]
-
-        v = -10000000
-        for r in range(len(state)):
-            for c in range(len(state)):
-                move_value = get_move_value(state, player, r, c)
-                if move_value > 0:
-                    new_state = execute_move(state, player, r, c)
-                    v = max(v, min_value(new_state, player))
-        return v
-
-    def min_value(state, player):
-        if is_terminal_state(state):
-            if player == "B":
-                return count_pieces(state)[0] - count_pieces(state)[1]
-            else:
-                return -count_pieces(state)[0] + count_pieces(state)[1]
-
-        v = 10000000
-        for r in range(len(state)):
-            for c in range(len(state)):
-                move_value = get_move_value(state, get_opponent(player), r, c)
-                if move_value > 0:
-                    new_state = execute_move(state, get_opponent(player), r, c)
-                    v = min(v, max_value(new_state, player))
-
-        return v
+    if player == "B":
+        value = -10000000
+    else:
+        value = 10000000
 
     for r in range(len(state)):
         for c in range(len(state)):
             move_value = get_move_value(state, player, r, c)
             if move_value > 0:
                 new_state = execute_move(state, player, r, c)
-                min_val = min_value(new_state, player)
-                if min_val > value:
-                    value = min_val
-                    row = r
-                    column = c
+                tmp_value, _, _ = minimax(
+                    new_state, "B" if player == "W" else "W")
+                ##########################################
+                if player == 'B':
+                    if tmp_value > value:
+                        value = tmp_value
+                        row = r
+                        column = c
+                else:
+                    if tmp_value < value:
+                        value = tmp_value
+                        row = r
+                        column = c
 
-    print(state, value, row, column, player,
-          min_val, max_value(new_state, player))
-    if row == -1 and column == -1:
-        return (value, -2, -2)
+    # Change player
+    if row == -2 and column == -2:
+        value, _, _ = minimax(state, "B" if player == "W" else "W")
+        #######################
 
     return (value, row, column)
 
@@ -254,27 +234,38 @@ def full_minimax(state, player):
         return opponent
 
     # Your implementation goes here
-    # print("start")
-    value, row, column = minimax(state, player)
 
-    if row == -2 and column == -2:  # no valid move for player
-        return (value, move_sequence)
+    if is_terminal_state(state):
+        return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
-    new_state = execute_move(state, player, row, column)
-    move_sequence.append((player, row, column))
-    # print("start", new_state, move_sequence)
+    if player == "B":
+        value = -10000000
+    else:
+        value = 10000000
 
-    while not is_terminal_state(new_state):
+    n = len(state)
+    for r in range(n):
+        for c in range(n):
+            move_value = get_move_value(state, player, r, c)
+            if move_value > 0:
+                new_state = execute_move(state, player, r, c)
+                #player = get_opponent(player)
+                tmp_value, moves = full_minimax(
+                    new_state, "B" if player == "W" else "W")
 
+                if player == 'B':
+                    if tmp_value > value:
+                        value = tmp_value
+                        move_sequence = [(player, r, c)] + moves
+                else:
+                    if tmp_value < value:
+                        value = tmp_value
+                        move_sequence = [(player, r, c)] + moves
+
+    if move_sequence == []:
         player = get_opponent(player)
-        value, row, column = minimax(new_state, player)
-        print("start", player, new_state, move_sequence, value, row, column)
-
-        if row == -2 and column == -2:
-            continue
-
-        new_state = execute_move(new_state, player, row, column)
-        move_sequence.append((player, row, column))
+        value, move_sequence = full_minimax(
+            state, player)
 
     return (value, move_sequence)
 
