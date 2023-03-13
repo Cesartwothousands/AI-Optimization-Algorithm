@@ -89,6 +89,8 @@ if __name__ == "__main__":
     # Compute best game play with alpha-beta pruning
     start_time = time.time()
     print("Running full minimax w/ alpha-beta pruning: ")
+    '''
     print(mp.full_minimax_ab(game_state, p1))
     elapsed_time = time.time() - start_time
     print(("Elapsed time: " + str(elapsed_time)))
+    '''
