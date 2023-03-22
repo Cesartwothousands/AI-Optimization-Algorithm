@@ -1,6 +1,7 @@
 # AI-Optimization-Algorithm
 Coursework of Rutgers CS520
 
+```txt
 /
 ├── Heuristic Algorithms Games/
 │   ├── N_Queens_Problem.py
@@ -13,3 +14,4 @@ Coursework of Rutgers CS520
 └── Uniformed Search/
     ├── uniform_cost_search.py
     └── GraphTraversal.java
+```
