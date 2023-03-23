@@ -207,7 +207,7 @@ This method should call the minimax algorithm to compute an optimal move sequenc
 """
 
 
-def full_minimax(state, player):
+def full_minimax(state, player, depth):
     value = 0
     move_sequence = []
 
@@ -226,7 +226,7 @@ def full_minimax(state, player):
 
     # Your implementation goes here
 
-    if is_terminal_state(state):
+    if depth == 0 or is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
     value = -10000000 if player == "B" else 10000000
@@ -238,7 +238,7 @@ def full_minimax(state, player):
                 new_state = execute_move(state, player, r, c)
                 #player = get_opponent(player)
                 maxmin, step = full_minimax(
-                    new_state, "B" if player == "W" else "W")
+                    new_state, "B" if player == "W" else "W", depth-1)
 
                 if (player == 'B' and maxmin > value) or (player == 'W' and maxmin < value):
                     value = maxmin
@@ -246,7 +246,7 @@ def full_minimax(state, player):
 
     if move_sequence == []:
         player = get_opponent(player)
-        value, move_sequence = full_minimax(state, player)
+        value, move_sequence = full_minimax(state, player, depth-1)
 
     return (value, move_sequence)
 
@@ -313,7 +313,7 @@ that leads to an end game, using alpha-beta pruning.
 """
 
 
-def full_minimax_ab(state, player):
+def full_minimax_ab(state, player, depth):
     value = 0
     move_sequence = []
     alpha = -10000000
@@ -334,7 +334,7 @@ def full_minimax_ab(state, player):
 
     # Your implementation goes here
 
-    if is_terminal_state(state):
+    if depth == 0 or is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
     value = -10000000 if player == "B" else 10000000
@@ -347,7 +347,7 @@ def full_minimax_ab(state, player):
 
                 new_state = execute_move(state, player, r, c)
                 maxmin, step = full_minimax_ab(
-                    new_state, "B" if player == "W" else "W")
+                    new_state, "B" if player == "W" else "W", depth-1)
 
                 if player == 'B':
                     if maxmin > value:
@@ -370,6 +370,6 @@ def full_minimax_ab(state, player):
 
     if move_sequence == []:
         player = get_opponent(player)
-        value, move_sequence = full_minimax_ab(state, player)
+        value, move_sequence = full_minimax_ab(state, player, depth-1)
 
     return (value, move_sequence)
