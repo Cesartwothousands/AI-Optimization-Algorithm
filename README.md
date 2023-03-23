@@ -16,9 +16,9 @@ Please follow both [Rutgers University's Principles of Academic Integrity](http:
 │   ├── A_Star_Search.py
 │   ├── test.py for A_Star_Search.py
 │   └── MRPP.py using AStarSearch
-├── MinMax with Alpha-Beta Pruning Othello/
-│   ├── mp520.py
-│   └── main.py for mp520.py
+├── Optimizing Othello Strategy with Minimax and Alpha-Beta Pruning/
+│   ├── Othello_strategy.py
+│   └── test.py for Othello_strategy.py
 └── Uniformed Search/
     ├── uniform_cost_search.py
     └── GraphTraversal.java

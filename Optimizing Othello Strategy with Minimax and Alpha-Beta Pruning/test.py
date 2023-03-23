@@ -1,4 +1,4 @@
-import mp520 as mp
+import Othello_strategy as mp
 import time
 
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     elapsed_time = time.time() - start_time
     print(("Elapsed time: " + str(elapsed_time)))
 
-    depth = 20
+    depth = 100000
 
     game_state = _get_default_start_game_state_4()
 
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     elapsed_time = time.time() - start_time
     print(("Elapsed time: " + str(elapsed_time)))
 
-    depth = 12
+    depth = 11
 
     game_state = _get_default_start_game_state_5()
 

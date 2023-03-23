@@ -337,7 +337,7 @@ def full_minimax_ab(state, player, depth):
     if depth == 0 or is_terminal_state(state):
         return (count_pieces(state)[0]-count_pieces(state)[1], [(player, -1, -1)])
 
-    value = -10000000 if player == "B" else 10000000
+    value = -10000001 if player == "B" else 10000001
 
     cut = False
     for r in range(len(state)):
@@ -353,18 +353,24 @@ def full_minimax_ab(state, player, depth):
                     if maxmin > value:
                         value = maxmin
                         move_sequence = [(player, r, c)] + step
-                    alpha = max(alpha, value)
+
                     if value >= beta:
                         cut = True
                         break
+
+                    alpha = max(alpha, value)
+
                 else:
                     if maxmin < value:
                         value = maxmin
                         move_sequence = [(player, r, c)] + step
-                    beta = min(beta, value)
+
                     if value <= alpha:
                         cut = True
                         break
+
+                    beta = min(beta, value)
+
         if cut == True:
             break
 
